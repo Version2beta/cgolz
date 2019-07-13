@@ -24,7 +24,7 @@ defmodule Cgolz.Render do
   end
 
   def render_camp(camp, show \\ :brains) do
-    render(camp, &((Cgolz.check_site(&1, &2) == show && "X") || " "))
+    render(camp, &((Cgolz.check_site(&1, &2) == show && "▒") || " "))
   end
 
   def render_census(camp) do
