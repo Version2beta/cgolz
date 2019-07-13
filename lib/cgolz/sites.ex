@@ -5,14 +5,16 @@ defmodule Cgolz.Sites do
 
   @neighbors [{-1, -1}, {0, -1}, {1, -1}, {-1, 0}, {1, 0}, {-1, 1}, {0, 1}, {1, 1}]
 
+  @type site :: {integer(), integer()}
   @type state :: %{tuple() => :zombie | :brains}
+  @type census :: %{tuple() => integer()}
 
   @doc """
   check({x, y})
 
   See if the tent at x, y is occupied by Zombies or Campers.
   """
-  @spec check(state :: state(), {x :: integer, y :: integer}) :: :zombie | :brains
+  @spec check(state :: state(), site) :: :zombie | :brains
   def check(state, {x, y}), do: Map.get(state, {x, y}, :brains)
 
   def offset({x, y}, {by_x, by_y}), do: {x + by_x, y + by_y}
@@ -21,5 +23,10 @@ defmodule Cgolz.Sites do
     Enum.map(@neighbors, fn neighbor -> check(state, offset(site, neighbor)) end)
     |> Enum.filter(fn neighbor -> neighbor == :zombie end)
     |> Enum.count()
+  end
+
+  @spec take_census(state) :: census
+  def take_census(_state) do
+    %{}
   end
 end

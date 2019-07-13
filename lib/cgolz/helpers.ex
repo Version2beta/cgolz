@@ -4,10 +4,13 @@ defmodule Cgolz.Helpers do
 
   Generate a random grid for testing. The grid will go from -x to x, and -y to y.
   """
-  @spec random_grid(range_x :: integer(), range_y :: integer()) :: %{tuple => :zombie}
+
+  alias Cgolz.Sites
+
+  @spec random_grid(range_x :: integer(), range_y :: integer()) :: Sites.state()
   def random_grid(range_x, range_y) do
     for x <- (-1 * range_x)..range_x, y <- (-1 * range_y)..range_y do
-      Enum.random([false, true]) && {{x, y}, :zombie}
+      Enum.random([false, false, false, true]) && {{x, y}, %{occupant: :zombie}}
     end
     |> Enum.filter(& &1)
     |> Enum.into(%{})
