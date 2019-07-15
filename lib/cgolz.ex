@@ -30,18 +30,9 @@ defmodule Cgolz do
 
   @spec take_census(campground) :: census
   def take_census(campground) do
-    Enum.reduce(campground, [], fn campsite, acc ->
-      local_census =
-        find_neighbors(campsite)
-        |> Enum.map(fn neighbor ->
-          Enum.find(acc, count_neighbors(campground, neighbor), fn {site, _count} ->
-            site == neighbor
-          end)
-        end)
-
-      local_census ++ acc
-    end)
+    Enum.flat_map(campground, fn campsite -> find_neighbors(campsite) end)
     |> Enum.uniq()
+    |> Enum.map(fn campsite -> count_neighbors(campground, campsite) end)
   end
 
   @spec find_neighbors(campsite) :: [campsite]
@@ -52,7 +43,7 @@ defmodule Cgolz do
   def count_neighbors(campground, campsite) do
     neighbors_count =
       find_neighbors(campsite)
-      |> Enum.filter(fn site -> check_site(campground, site) == :brains end)
+      |> Enum.filter(fn site -> check_site(campground, site) == :zombie end)
       |> Enum.count()
 
     {campsite, neighbors_count}
@@ -61,8 +52,8 @@ defmodule Cgolz do
   @spec check_site(campground, campsite) :: :zombie | :brains
   def check_site(campground, campsite) do
     cond do
-      campsite in campground -> :brains
-      true -> :zombie
+      campsite in campground -> :zombie
+      true -> :brains
     end
   end
 end

@@ -9,10 +9,10 @@ defmodule CgolzTest do
   @toad_2 [{0, 0}, {0, 1}, {1, 2}, {2, -1}, {3, 0}, {3, 1}]
 
   test "finds a brain in a camp",
-    do: assert(Cgolz.check_site(@beacon, {1, 1}) == :brains)
+    do: assert(Cgolz.check_site(@beacon, {2, 1}) == :brains)
 
   test "finds a zombie in a camp",
-    do: assert(Cgolz.check_site(@beacon, {2, 1}) == :zombie)
+    do: assert(Cgolz.check_site(@beacon, {1, 1}) == :zombie)
 
   test "finds neighbors" do
     assert Cgolz.find_neighbors({0, 0}) == [
