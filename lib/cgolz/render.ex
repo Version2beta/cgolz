@@ -16,10 +16,11 @@ defmodule Cgolz.Render do
 
           :timer.sleep(Keyword.get(opts, :wait, 500))
 
-          {{new_min_x, new_min_y}, {new_max_x, new_max_y}} = range_finder(current)
+          next = Cgolz.tick(current)
+          {{new_min_x, new_min_y}, {new_max_x, new_max_y}} = range_finder(next)
 
           {
-            Cgolz.tick(current),
+            next,
             {
               {min(new_min_x, min_x), min(new_min_y, min_y)},
               {max(new_max_x, max_x), max(new_max_y, max_y)}
