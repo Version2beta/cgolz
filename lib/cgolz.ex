@@ -1,7 +1,15 @@
 defmodule Cgolz do
   @moduledoc """
+  # Cgolz
 
+  The rules of Conway's Game of Life, Zombie version
+
+  1. Any zombie with fewer than two neighboring zombie campers is overcome by the campers.
+  2. Any zombie with two or three neighboring zombie campers goes on the to next tick.
+  3. Any zombie with more than three zombie neighbours succombs to overpopulation.
+  4. Any campsite with exactly three zombie neighbours remains, or becomes, zombified.
   """
+
   @type campsite :: {integer, integer}
   @type campground :: [campsite]
   @type site_census :: {campsite, integer}
@@ -50,10 +58,5 @@ defmodule Cgolz do
   end
 
   @spec check_site(campground, campsite) :: :zombie | :brains
-  def check_site(campground, campsite) do
-    cond do
-      campsite in campground -> :zombie
-      true -> :brains
-    end
-  end
+  def check_site(campground, campsite), do: (campsite in campground && :zombie) || :brains
 end

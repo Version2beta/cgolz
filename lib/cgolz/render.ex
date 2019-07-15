@@ -1,33 +1,39 @@
 defmodule Cgolz.Render do
-  def run(camp, opts \\ []) do
-    {{min_x1, min_y1}, {max_x1, max_y1}} = range_finder(camp)
+  def run(campground, opts \\ []) do
+    {{min_x1, min_y1}, {max_x1, max_y1}} = range_finder(campground)
     IO.ANSI.clear() |> IO.write()
 
-    Enum.reduce(
-      1..Keyword.get(opts, :generations, 10),
-      {camp, {{min_x1, min_y1}, {max_x1, max_y1}}},
-      fn g, {current, {{min_x, min_y}, {max_x, max_y}}} ->
-        IO.ANSI.home() |> IO.write()
-        IO.write("Generation #{g} - #{max_x - min_x + 1} x #{max_y - min_y + 1}\n")
+    final_campground =
+      Enum.reduce(
+        1..Keyword.get(opts, :generations, 10),
+        {campground, {{min_x1, min_y1}, {max_x1, max_y1}}},
+        fn g, {current, {{min_x, min_y}, {max_x, max_y}}} ->
+          IO.ANSI.home() |> IO.write()
+          IO.puts("Generation #{g} - #{max_x - min_x + 1} x #{max_y - min_y + 1}")
 
-        render_camp(current, {{min_x, min_y}, {max_x, max_y}})
-        |> IO.write()
+          render_campground(current, {{min_x, min_y}, {max_x, max_y}})
+          |> IO.puts()
 
-        :timer.sleep(Keyword.get(opts, :wait, 500))
+          :timer.sleep(Keyword.get(opts, :wait, 500))
 
-        {{new_min_x, new_min_y}, {new_max_x, new_max_y}} = range_finder(current)
+          {{new_min_x, new_min_y}, {new_max_x, new_max_y}} = range_finder(current)
 
-        {
-          Cgolz.tick(current),
           {
-            {min(new_min_x, min_x), min(new_min_y, min_y)},
-            {max(new_max_x, max_x), max(new_max_y, max_y)}
+            Cgolz.tick(current),
+            {
+              {min(new_min_x, min_x), min(new_min_y, min_y)},
+              {max(new_max_x, max_x), max(new_max_y, max_y)}
+            }
           }
-        }
-      end
-    )
+        end
+      )
 
-    :ok
+    with {[], _} <- final_campground do
+      :smooooores!
+    else
+      _ ->
+        :braaaaaaaains!
+    end
   end
 
   def render(source, fun), do: render(source, range_finder(source), fun)
@@ -42,16 +48,16 @@ defmodule Cgolz.Render do
     |> Enum.join("\n")
   end
 
-  def render_camp(camp, size \\ nil) do
+  def render_campground(campground, size \\ nil) do
     render(
-      camp,
-      size || range_finder(camp),
+      campground,
+      size || range_finder(campground),
       &((Cgolz.check_site(&1, &2) == :zombie && "🧟") || "🧠")
     )
   end
 
-  def render_census(camp) do
-    Cgolz.take_census(camp)
+  def render_census(campground) do
+    Cgolz.take_census(campground)
     |> render(&Cgolz.check_census/2)
   end
 
@@ -60,8 +66,8 @@ defmodule Cgolz.Render do
     |> range_finder()
   end
 
-  def range_finder([h | _] = camp) do
-    Enum.reduce(camp, {h, h}, fn {x, y}, {{min_x, min_y}, {max_x, max_y}} ->
+  def range_finder([h | _] = campground) do
+    Enum.reduce(campground, {h, h}, fn {x, y}, {{min_x, min_y}, {max_x, max_y}} ->
       {
         {min(x, min_x), min(y, min_y)},
         {max(x, max_x), max(y, max_y)}

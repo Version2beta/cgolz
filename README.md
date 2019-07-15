@@ -11,7 +11,10 @@ Standard Conway's Game of Life rules:
 
 Rules for Conway's Game of Life, with Zombies:
 
-1.
+1. Any zombie with fewer than two neighboring zombie campers is overcome by the campers.
+2. Any zombie with two or three neighboring zombie campers goes on the to next tick.
+3. Any zombie with more than three zombie neighbours succombs to overpopulation.
+4. Any campsite with exactly three zombie neighbours remains, or becomes, zombified.
 
 How to run this version:
 
@@ -20,8 +23,3 @@ How to run this version:
 `Cgolz.Render` offers a few basic tools for rendering a grid in IEx, and a `run` function that renders a grid across multiple generations with configurable delays between each generation.
 
 Finally, `Cgolz.Helpers` offers a `random_grid` function providing a starting point.
-
-Nice to haves:
-
-- A Zombie summer camp narrative and ubiquitous language
-- More interesting render options?
