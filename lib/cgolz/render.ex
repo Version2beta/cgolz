@@ -1,30 +1,53 @@
 defmodule Cgolz.Render do
   def run(camp, opts \\ []) do
-    Enum.reduce(1..Keyword.get(opts, :generations, 10), camp, fn g, current ->
-      IO.puts("\nGeneration #{g}")
-      render_camp(current)
-      :timer.sleep(Keyword.get(opts, :wait, 500))
-      Cgolz.tick(current)
-    end)
+    {{min_x1, min_y1}, {max_x1, max_y1}} = range_finder(camp)
+    IO.ANSI.clear() |> IO.write()
+
+    Enum.reduce(
+      1..Keyword.get(opts, :generations, 10),
+      {camp, {{min_x1, min_y1}, {max_x1, max_y1}}},
+      fn g, {current, {{min_x, min_y}, {max_x, max_y}}} ->
+        IO.ANSI.home() |> IO.write()
+        IO.write("Generation #{g} - #{max_x - min_x} x #{max_y - min_y}\n")
+
+        render_camp(current, {{min_x, min_y}, {max_x, max_y}})
+        |> IO.write()
+
+        :timer.sleep(Keyword.get(opts, :wait, 500))
+
+        {{new_min_x, new_min_y}, {new_max_x, new_max_y}} = range_finder(current)
+
+        {
+          Cgolz.tick(current),
+          {
+            {min(new_min_x, min_x), min(new_min_y, min_y)},
+            {max(new_max_x, max_x), max(new_max_y, max_y)}
+          }
+        }
+      end
+    )
 
     :ok
   end
 
-  def render(source, fun) do
-    {{min_x, min_y}, {max_x, max_y}} = range_finder(source)
+  def render(source, fun), do: render(source, range_finder(source), fun)
 
+  def render(source, {{min_x, min_y}, {max_x, max_y}}, fun) do
     for y <- min_y..max_y do
       for x <- min_x..max_x do
         fun.(source, {x, y})
       end
-      |> Enum.join("  ")
+      |> Enum.join("")
     end
     |> Enum.join("\n")
-    |> IO.puts()
   end
 
-  def render_camp(camp, show \\ :brains) do
-    render(camp, &((Cgolz.check_site(&1, &2) == show && "▒") || " "))
+  def render_camp(camp, size \\ nil, show \\ :brains) do
+    render(
+      camp,
+      size || range_finder(camp),
+      &((Cgolz.check_site(&1, &2) == show && "▒▒") || "  ")
+    )
   end
 
   def render_census(camp) do
