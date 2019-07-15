@@ -24,4 +24,4 @@ Finally, `Cgolz.Helpers` offers a `random_grid` function providing a starting po
 Nice to haves:
 
 - A Zombie summer camp narrative and ubiquitous language
-- More interesting render options
+- More interesting render options?

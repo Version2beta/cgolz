@@ -8,7 +8,7 @@ defmodule Cgolz.Render do
       {camp, {{min_x1, min_y1}, {max_x1, max_y1}}},
       fn g, {current, {{min_x, min_y}, {max_x, max_y}}} ->
         IO.ANSI.home() |> IO.write()
-        IO.write("Generation #{g} - #{max_x - min_x} x #{max_y - min_y}\n")
+        IO.write("Generation #{g} - #{max_x - min_x + 1} x #{max_y - min_y + 1}\n")
 
         render_camp(current, {{min_x, min_y}, {max_x, max_y}})
         |> IO.write()
@@ -42,11 +42,11 @@ defmodule Cgolz.Render do
     |> Enum.join("\n")
   end
 
-  def render_camp(camp, size \\ nil, show \\ :brains) do
+  def render_camp(camp, size \\ nil) do
     render(
       camp,
       size || range_finder(camp),
-      &((Cgolz.check_site(&1, &2) == show && "▒▒") || "  ")
+      &((Cgolz.check_site(&1, &2) == :zombie && "🧟") || "🧠")
     )
   end
 
